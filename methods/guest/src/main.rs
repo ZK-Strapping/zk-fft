@@ -67,16 +67,19 @@ fn poly_mul(n: usize, x: Vec<i64>, y: Vec<i64>) -> Vec<i64> {
     let mut y: Vec<Complex> = y.iter().map(|yi| Complex(*yi as f64, 0.)).collect();
 
     let len = (n * 2).next_power_of_two();
-    x.reverse();
+    // x.reverse();
     x.resize(len, Complex(0., 0.));
-    y.extend_from_within(..);
+    // y.reverse();
     y.resize(len, Complex(0., 0.));
     fft(&mut x, false);
     fft(&mut y, false);
     x.iter_mut().zip(&y).for_each(|(xi, &yi)| *xi = *xi * yi);
     fft(&mut x, true);
 
-    x.iter().map(|xi| xi.0 as i64).collect()
+    for xi in &x {
+        println!("{} {}", xi.0, xi.1);
+    }
+    x.iter().map(|xi| xi.0.round() as i64).collect()
 }
 
 #[derive(Clone, Copy, PartialEq)]

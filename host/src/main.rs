@@ -21,9 +21,10 @@ fn main() {
 
     // For example:
     // let input: u32 = 15 * 2 ^ 27 + 1;
-    let n: usize = 2;
-    let x: Vec<i64> = vec![1, 1];
-    let y: Vec<i64> = vec![1, 1];
+    let n: usize = 5;
+    // input : [a0, a1, ..., an] for a0 + a1 * x + ... + an * x^n
+    let x: Vec<i64> = vec![-1, 1, 0, 0, 0];
+    let y: Vec<i64> = vec![1, 1, 1, 1, 1];
     let env = ExecutorEnv::builder()
         .write(&n)
         .unwrap()
