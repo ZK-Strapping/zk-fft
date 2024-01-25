@@ -24,36 +24,39 @@ pub fn main() {
 
 use std::ops::*;
 
-fn fft(coefs: &mut [Complex], invert: bool) {
-    let n = coefs.len();
+fn fft(coeff: &mut [Complex], invert: bool) {
+    let n = coeff.len();
+
     let shift = n.leading_zeros() + 1;
     for i in 0..n {
-        let reversed = i.reverse_bits() >> shift;
-        if i < reversed {
-            coefs.swap(i, reversed);
+        let j = i.reverse_bits() >> shift;
+        if i < j {
+            coeff.swap(i, j);
         }
     }
+
     let mut len = 2;
+
     while len <= n {
-        let mut angle = std::f64::consts::TAU / len as f64;
+        let mut ang = std::f64::consts::TAU / len as f64;
         if invert {
-            angle = -angle;
+            ang = -ang;
         }
-        let w = Complex(angle.cos(), angle.sin());
+        let w = Complex(ang.cos(), ang.sin());
         for i in (0..n).step_by(len) {
             let mut wi = Complex(1., 0.);
             for j in 0..len / 2 {
-                let even = coefs[i + j];
-                let odd = coefs[i + j + len / 2] * wi;
-                coefs[i + j] = even + odd;
-                coefs[i + j + len / 2] = even - odd;
+                let even = coeff[i + j];
+                let odd = coeff[i + j + len / 2] * wi;
+                coeff[i + j] = even + odd;
+                coeff[i + j + len / 2] = even - odd;
                 wi = wi * w;
             }
         }
         len <<= 1;
     }
     if invert {
-        for coef in coefs {
+        for coef in coeff {
             coef.0 /= n as f64;
             coef.1 /= n as f64;
         }
@@ -65,12 +68,12 @@ fn poly_mul(n: usize, x: Vec<i64>, m: usize, y: Vec<i64>) -> Vec<i64> {
     let mut y: Vec<Complex> = y.iter().map(|yi| Complex(*yi as f64, 0.)).collect();
 
     let len = (n + m).next_power_of_two();
-    // x.reverse();
     x.resize(len, Complex(0., 0.));
-    // y.reverse();
     y.resize(len, Complex(0., 0.));
+
     fft(&mut x, false);
     fft(&mut y, false);
+
     x.iter_mut().zip(&y).for_each(|(xi, &yi)| *xi = *xi * yi);
     fft(&mut x, true);
 
