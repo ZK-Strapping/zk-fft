@@ -3,7 +3,7 @@
 use methods::{HELLO_GUEST_ELF, HELLO_GUEST_ID};
 use risc0_zkvm::{default_prover, ExecutorEnv};
 
-fn main() {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize tracing. In order to view logs, run `RUST_LOG=info cargo run`
     env_logger::init();
 
@@ -19,19 +19,17 @@ fn main() {
     // creates an ExecutorEnvBuilder. When you're done adding input, call
     // ExecutorEnvBuilder::build().
 
-    // For example:
-    // let input: u32 = 15 * 2 ^ 27 + 1;
-    let n: usize = 5;
     // input : [a0, a1, ..., an] for a0 + a1 * x + ... + an * x^n
-    let x: Vec<i64> = vec![-1, 1, 0, 0, 0];
-    let y: Vec<i64> = vec![1, 1, 1, 1, 1];
+    let n: usize = 2;
+    let ax: Vec<i64> = vec![-1, 1]; // -1 + x
+    let m: usize = 5;
+    let bx: Vec<i64> = vec![1, 1, 1, 1, 1]; // 1 + x + x^2 + x^3 + x^4
+
     let env = ExecutorEnv::builder()
-        .write(&n)
-        .unwrap()
-        .write(&x)
-        .unwrap()
-        .write(&y)
-        .unwrap()
+        .write(&n)?
+        .write(&ax)?
+        .write(&m)?
+        .write(&bx)?
         .build()
         .unwrap();
 
@@ -53,4 +51,6 @@ fn main() {
     // Optional: Verify receipt to confirm that recipients will also be able to
     // verify your receipt
     receipt.verify(HELLO_GUEST_ID).unwrap();
+
+    Ok(())
 }

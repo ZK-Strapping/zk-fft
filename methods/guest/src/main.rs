@@ -11,20 +11,18 @@ pub fn main() {
 
     // read the input
     let n: usize = env::read();
-    let x: Vec<i64> = env::read();
-    let y: Vec<i64> = env::read();
+    let ax: Vec<i64> = env::read();
+    let m: usize = env::read();
+    let bx: Vec<i64> = env::read();
 
     // TODO: do something with the input
-    let z = poly_mul(n, x, y);
+    let cx = poly_mul(n, ax, m, bx);
 
     // write public output to the journal
-    env::commit(&z);
+    env::commit(&cx);
 }
 
-// extern crate std;
 use std::ops::*;
-// use std::println;
-// use std::vec::Vec;
 
 fn fft(coefs: &mut [Complex], invert: bool) {
     let n = coefs.len();
@@ -62,11 +60,11 @@ fn fft(coefs: &mut [Complex], invert: bool) {
     }
 }
 
-fn poly_mul(n: usize, x: Vec<i64>, y: Vec<i64>) -> Vec<i64> {
+fn poly_mul(n: usize, x: Vec<i64>, m: usize, y: Vec<i64>) -> Vec<i64> {
     let mut x: Vec<Complex> = x.iter().map(|xi| Complex(*xi as f64, 0.)).collect();
     let mut y: Vec<Complex> = y.iter().map(|yi| Complex(*yi as f64, 0.)).collect();
 
-    let len = (n * 2).next_power_of_two();
+    let len = (n + m).next_power_of_two();
     // x.reverse();
     x.resize(len, Complex(0., 0.));
     // y.reverse();
