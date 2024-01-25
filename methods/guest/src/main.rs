@@ -114,7 +114,7 @@ impl Sub for Complex {
 }
 
 fn corr(val: f64) -> f64 {
-    let mut val2 = (val*10.0f64.powi(TRUNC_PRECISION)).trunc();
+    let mut val2 = (val*10.0f64.powi(TRUNC_PRECISION)).round();
     if val2.abs() <= f64::EPSILON {
         val2 = 0.0;
     }
