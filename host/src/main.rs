@@ -21,9 +21,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // input : [a0, a1, ..., an] for a0 + a1 * x + ... + an * x^n
     let n: usize = 2;
-    let ax: Vec<i64> = vec![-1, 1]; // -1 + x
+    let ax: Vec<f64> = vec![-1.0, 1.0]; // -1 + x
     let m: usize = 5;
-    let bx: Vec<i64> = vec![1, 1, 1, 1, 1]; // 1 + x + x^2 + x^3 + x^4
+    let bx: Vec<f64> = vec![1.0, 1.0, 1.0, 1.0, 1.0]; // 1 + x + x^2 + x^3 + x^4
 
     let env = ExecutorEnv::builder()
         .write(&n)?
@@ -42,7 +42,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // TODO: Implement code for retrieving receipt journal here.
 
     // For example:
-    let _output: Vec<i64> = receipt.journal.decode().unwrap();
+    let _output: Vec<f64> = receipt.journal.decode().unwrap();
     println!(
         "Input: n = {}, ax = {:#?},\n m = {}, bx = {:#?}",
         n, ax, m, bx
@@ -81,17 +81,17 @@ mod tests {
         let n: usize = nm[0];
         let m: usize = nm[1];
 
-        let ax: Vec<i64> = input_lines
+        let ax: Vec<f64> = input_lines
             .next()
             .unwrap()?
             .split_whitespace()
-            .map(|x| x.parse::<i64>().unwrap())
+            .map(|x| x.parse::<f64>().unwrap())
             .collect();
-        let bx: Vec<i64> = input_lines
+        let bx: Vec<f64> = input_lines
             .next()
             .unwrap()?
             .split_whitespace()
-            .map(|x| x.parse::<i64>().unwrap())
+            .map(|x| x.parse::<f64>().unwrap())
             .collect();
 
         let env = ExecutorEnv::builder()
@@ -103,7 +103,7 @@ mod tests {
             .unwrap();
         let prover = default_prover();
         let receipt = prover.prove_elf(env, HELLO_GUEST_ELF).unwrap();
-        let _output: Vec<i64> = receipt.journal.decode().unwrap();
+        let _output: Vec<f64> = receipt.journal.decode().unwrap();
         println!(
             "Input: n = {}, ax = {:#?},\n m = {}, bx = {:#?}",
             n, ax, m, bx
@@ -112,7 +112,7 @@ mod tests {
 
         let output_file =
             File::open(format!("./src/tests/out/{}.out", test_case)).expect("file not found");
-        let real_output: Vec<i64> = BufReader::new(output_file)
+        let real_output: Vec<f64> = BufReader::new(output_file)
             .lines()
             .next()
             .unwrap()?

@@ -6,14 +6,16 @@ use risc0_zkvm::guest::env;
 
 risc0_zkvm::guest::entry!(main);
 
+const TRUNC_PRECISION: i32 = 10;
+
 pub fn main() {
     // TODO: Implement your guest code here
 
     // read the input
     let n: usize = env::read();
-    let ax: Vec<i64> = env::read();
+    let ax: Vec<f64> = env::read();
     let m: usize = env::read();
-    let bx: Vec<i64> = env::read();
+    let bx: Vec<f64> = env::read();
 
     // TODO: do something with the input
     let cx = poly_mul(n, ax, m, bx);
@@ -63,7 +65,7 @@ fn fft(coeff: &mut [Complex], invert: bool) {
     }
 }
 
-fn poly_mul(n: usize, x: Vec<i64>, m: usize, y: Vec<i64>) -> Vec<i64> {
+fn poly_mul(n: usize, x: Vec<f64>, m: usize, y: Vec<f64>) -> Vec<f64> {
     let mut x: Vec<Complex> = x.iter().map(|xi| Complex(*xi as f64, 0.)).collect();
     let mut y: Vec<Complex> = y.iter().map(|yi| Complex(*yi as f64, 0.)).collect();
 
@@ -81,7 +83,7 @@ fn poly_mul(n: usize, x: Vec<i64>, m: usize, y: Vec<i64>) -> Vec<i64> {
     for xi in &x {
         println!("{} {}", xi.0, xi.1);
     }
-    x.iter().map(|xi| xi.0.round() as i64).collect()
+    x.iter().map(|xi| corr(xi.0) as f64).collect()
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -109,4 +111,12 @@ impl Sub for Complex {
     fn sub(self, rhs: Self) -> Self {
         Complex(self.0 - rhs.0, self.1 - rhs.1)
     }
+}
+
+fn corr(val: f64) -> f64 {
+    let mut val2 = (val*10.0f64.powi(TRUNC_PRECISION)).trunc();
+    if val2.abs() <= f64::EPSILON {
+        val2 = 0.0;
+    }
+    val2 * 10.0f64.powi(-TRUNC_PRECISION)
 }
