@@ -21,9 +21,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // input : [a0, a1, ..., an] for a0 + a1 * x + ... + an * x^n
     let n: usize = 2;
-    let ax: Vec<f64> = vec![-1.0, 1.1]; // -1 + x
+    let ax: Vec<i64> = vec![-1, 1]; // -1 + x
     let m: usize = 5;
-    let bx: Vec<f64> = vec![1.0, 1.0, 1.0, 1.0, 1.0]; // 1 + x + x^2 + x^3 + x^4
+    let bx: Vec<i64> = vec![1, 1, 1, 1, 1]; // 1 + x + x^2 + x^3 + x^4
 
     let env = ExecutorEnv::builder()
         .write(&n)?
@@ -42,7 +42,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // TODO: Implement code for retrieving receipt journal here.
 
     // For example:
-    let _output: Vec<f64> = receipt.journal.decode().unwrap();
+    let _output: Vec<i64> = receipt.journal.decode().unwrap();
     println!(
         "Hello, world! I generated a proof of guest execution! {:#?} is a public output from journal ",
         _output
