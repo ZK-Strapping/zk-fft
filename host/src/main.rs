@@ -44,13 +44,84 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // For example:
     let _output: Vec<i64> = receipt.journal.decode().unwrap();
     println!(
-        "Hello, world! I generated a proof of guest execution! {:#?} is a public output from journal ",
-        _output
+        "Input: n = {}, ax = {:#?},\n m = {}, bx = {:#?}",
+        n, ax, m, bx
     );
+    println!("Public output: {:#?}", _output);
 
     // Optional: Verify receipt to confirm that recipients will also be able to
     // verify your receipt
     receipt.verify(HELLO_GUEST_ID).unwrap();
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs::File;
+    use std::io::{prelude::*, BufReader};
+    use std::usize;
+
+    #[test]
+    fn test_poly_mul() -> Result<(), Box<dyn std::error::Error>> {
+        env_logger::init();
+
+        let test_case = "example_00";
+        let input_file =
+            File::open(format!("./src/tests/in/{}.in", test_case)).expect("file not found");
+        let mut input_lines = BufReader::new(input_file).lines();
+
+        let nm: Vec<_> = input_lines
+            .next()
+            .unwrap()?
+            .split_whitespace()
+            .map(|x| x.parse::<usize>().unwrap())
+            .collect();
+        let n: usize = nm[0];
+        let m: usize = nm[1];
+
+        let ax: Vec<i64> = input_lines
+            .next()
+            .unwrap()?
+            .split_whitespace()
+            .map(|x| x.parse::<i64>().unwrap())
+            .collect();
+        let bx: Vec<i64> = input_lines
+            .next()
+            .unwrap()?
+            .split_whitespace()
+            .map(|x| x.parse::<i64>().unwrap())
+            .collect();
+
+        let env = ExecutorEnv::builder()
+            .write(&n)?
+            .write(&ax)?
+            .write(&m)?
+            .write(&bx)?
+            .build()
+            .unwrap();
+        let prover = default_prover();
+        let receipt = prover.prove_elf(env, HELLO_GUEST_ELF).unwrap();
+        let _output: Vec<i64> = receipt.journal.decode().unwrap();
+        println!(
+            "Input: n = {}, ax = {:#?},\n m = {}, bx = {:#?}",
+            n, ax, m, bx
+        );
+        println!("Public output: {:#?}", _output);
+
+        let output_file =
+            File::open(format!("./src/tests/out/{}.out", test_case)).expect("file not found");
+        let real_output: Vec<i64> = BufReader::new(output_file)
+            .lines()
+            .next()
+            .unwrap()?
+            .split_whitespace()
+            .map(|x| x.parse().unwrap())
+            .collect();
+
+        assert_eq!(&_output[..(n + m - 1)], real_output);
+
+        Ok(())
+    }
 }

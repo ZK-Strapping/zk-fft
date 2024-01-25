@@ -77,6 +77,7 @@ fn poly_mul(n: usize, x: Vec<i64>, m: usize, y: Vec<i64>) -> Vec<i64> {
     x.iter_mut().zip(&y).for_each(|(xi, &yi)| *xi = *xi * yi);
     fft(&mut x, true);
 
+    println!("Results of FFT & iFFT:");
     for xi in &x {
         println!("{} {}", xi.0, xi.1);
     }
