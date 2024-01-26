@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CircuitInput {
     pub n: usize,
     pub ax: Vec<f64>,
@@ -9,7 +9,7 @@ pub struct CircuitInput {
 }
 pub type CircuitOutput = Vec<f64>;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize)]
 pub struct CircuitJournal {
     pub input: CircuitInput,
     pub output: CircuitOutput,
