@@ -20,10 +20,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // ExecutorEnvBuilder::build().
 
     // input : [a0, a1, ..., an] for a0 + a1 * x + ... + an * x^n
-    let n: usize = 2;
-    let ax: Vec<f64> = vec![-1.0, 1.0]; // -1 + x
-    let m: usize = 5;
-    let bx: Vec<f64> = vec![1.0, 1.0, 1.0, 1.0, 1.0]; // 1 + x + x^2 + x^3 + x^4
+    let n: usize = 10;
+    let ax: Vec<f64> = vec![-1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0]; // -1 + x
+    let m: usize = 10;
+    let bx: Vec<f64> = vec![-1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0, -1.0, 1.0]; // 1 + x + x^2 + x^3 + x^4
 
     let env = ExecutorEnv::builder()
         .write(&n)?
