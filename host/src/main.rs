@@ -122,6 +122,11 @@ mod tests {
     }
 
     #[test]
+    fn test_poly_mul_30() {
+        test_poly_mul_n(10);
+    }
+
+    #[test]
     fn test_poly_mul_100() {
         test_poly_mul_n(100);
     }
@@ -145,20 +150,13 @@ mod tests {
     }
 
     fn check_poly_mul(input: CircuitInput, output: CircuitOutput) {
-        let mut rng = rand::thread_rng();
-
-        for k in rand::seq::index::sample(
-            &mut rng,
-            input.n + input.m - 1,
-            std::cmp::min(input.n + input.m - 1, 1e5 as usize),
-        )
-        .into_iter()
-        {
-            let mut c = 0.0;
-            for i in 0..=k {
-                c += input.ax[i] * input.bx[k - i];
+        // polynomial multiplication in O(n^2)
+        let mut real_output = vec![0.; input.n + input.m - 1];
+        for i in 0..input.n {
+            for j in 0..input.m {
+                real_output[i + j] += input.ax[i] * input.bx[j];
             }
-            assert_eq!(c.round(), output[k].round());
         }
+        assert_eq!(&output[..(input.n + input.m - 1)], real_output);
     }
 }
