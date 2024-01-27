@@ -60,6 +60,9 @@ fn fft(coeff: &mut [Complex], invert: bool) {
 }
 
 fn poly_mul(n: usize, x: &[f64], m: usize, y: &[f64]) -> Vec<f64> {
+    assert_eq!(n, x.len());
+    assert_eq!(m, y.len());
+
     let mut x: Vec<Complex> = x.iter().map(|xi| Complex(*xi, 0.)).collect();
     let mut y: Vec<Complex> = y.iter().map(|yi| Complex(*yi, 0.)).collect();
 
@@ -73,10 +76,13 @@ fn poly_mul(n: usize, x: &[f64], m: usize, y: &[f64]) -> Vec<f64> {
     x.iter_mut().zip(&y).for_each(|(xi, &yi)| *xi = *xi * yi);
     fft(&mut x, true);
 
-    println!("Results of FFT & iFFT:");
-    for xi in &x {
-        println!("{} {}", xi.0, xi.1);
+    if cfg!(debug_assertions) {
+        println!("Results of FFT & iFFT:");
+        for xi in &x {
+            println!("{} {}", xi.0, xi.1);
+        }
     }
+
     x.iter().map(|xi| corr(xi.0)).collect()
 }
 
