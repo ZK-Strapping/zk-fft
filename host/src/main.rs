@@ -5,6 +5,9 @@ use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
 use zk_fft_core::*;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Initialize tracing. In order to view logs, run `RUST_LOG=info cargo run`
+    env_logger::init();
+
     // input : [a0, a1, ..., an] for a0 + a1 * x + ... + an * x^n
     // let input = CircuitInput {
     //     n: 2,
@@ -30,9 +33,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 pub fn generate_proof(input: CircuitInput) -> Result<Receipt, Box<dyn std::error::Error>> {
-    // Initialize tracing. In order to view logs, run `RUST_LOG=info cargo run`
-    env_logger::init();
-
     let env = ExecutorEnv::builder()
         .write(&input)
         .unwrap()
