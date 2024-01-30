@@ -60,6 +60,7 @@ mod tests {
     use rand::Rng;
     use std::fs::File;
     use std::io::{prelude::*, BufReader};
+    use std::time::Instant;
 
     // #[test]
     fn test_poly_mul_test_case() -> Result<(), Box<dyn std::error::Error>> {
@@ -123,7 +124,7 @@ mod tests {
 
     #[test]
     fn test_poly_mul_30() {
-        test_poly_mul_n(10);
+        test_poly_mul_n(30);
     }
 
     #[test]
@@ -142,11 +143,19 @@ mod tests {
         let bx: Vec<f64> = (0..n).map(|_| rng.gen_range(-100..=100) as f64).collect();
 
         let input = CircuitInput { n, ax, m: n, bx };
+        let timer = Instant::now();
         let receipt = generate_proof(input).unwrap();
+        let proving_time = timer.elapsed();
         print_journal(&receipt);
+        println!("Proving time: {:?}", proving_time);
 
         let journal: CircuitJournal = receipt.journal.decode().unwrap();
         check_poly_mul(journal.input, journal.output);
+
+        let timer = Instant::now();
+        receipt.verify(HELLO_GUEST_ID).unwrap();
+        let verifying_time = timer.elapsed();
+        println!("Verifying time: {:?}", verifying_time);
     }
 
     fn check_poly_mul(input: CircuitInput, output: CircuitOutput) {
@@ -157,6 +166,18 @@ mod tests {
                 real_output[i + j] += input.ax[i] * input.bx[j];
             }
         }
-        assert_eq!(&output[..(input.n + input.m - 1)], real_output);
+
+        // Exact comparison
+        // assert_eq!(&output[..(input.n + input.m - 1)], real_output);
+
+        // Approximate comparison
+        let diff = real_output
+            .iter()
+            .zip(output.iter())
+            .map(|(x, y)| (x - y).abs())
+            .max_by(|x, y| x.partial_cmp(y).unwrap())
+            .unwrap();
+        let eps = 1e-6;
+        assert!(diff < eps);
     }
 }

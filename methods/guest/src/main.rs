@@ -7,7 +7,7 @@ use zk_fft_core::*;
 
 risc0_zkvm::guest::entry!(main);
 
-const TRUNC_PRECISION: i32 = 10;
+const TRUNC_PRECISION: i32 = 3;
 
 pub fn main() {
     let input: CircuitInput = env::read();
