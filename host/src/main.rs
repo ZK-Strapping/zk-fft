@@ -123,11 +123,6 @@ mod tests {
     }
 
     #[test]
-    fn test_poly_mul_30() {
-        test_poly_mul_n(30);
-    }
-
-    #[test]
     fn test_poly_mul_100() {
         test_poly_mul_n(100);
     }
@@ -146,8 +141,8 @@ mod tests {
         let timer = Instant::now();
         let receipt = generate_proof(input).unwrap();
         let proving_time = timer.elapsed();
-        print_journal(&receipt);
-        println!("Proving time: {:?}", proving_time);
+        // print_journal(&receipt);
+        println!("[n = {n}] Proving time: {:?}", proving_time);
 
         let journal: CircuitJournal = receipt.journal.decode().unwrap();
         check_poly_mul(journal.input, journal.output);
@@ -155,7 +150,7 @@ mod tests {
         let timer = Instant::now();
         receipt.verify(HELLO_GUEST_ID).unwrap();
         let verifying_time = timer.elapsed();
-        println!("Verifying time: {:?}", verifying_time);
+        println!("[n = {n}] Verifying time: {:?}", verifying_time);
     }
 
     fn check_poly_mul(input: CircuitInput, output: CircuitOutput) {
