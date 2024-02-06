@@ -39,7 +39,7 @@ pub fn generate_proof(input: CircuitInput) -> Result<Receipt, Box<dyn std::error
         .build()
         .unwrap();
     let prover = default_prover();
-    let receipt = prover.prove_elf(env, HELLO_GUEST_ELF).unwrap();
+    let receipt = prover.prove(env, HELLO_GUEST_ELF).unwrap();
     Ok(receipt)
 }
 
