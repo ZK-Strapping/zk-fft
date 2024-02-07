@@ -3,25 +3,19 @@
 // #![no_std] // std support is experimental
 
 use risc0_zkvm::guest::env;
+use zk_fft_core::*;
 
 risc0_zkvm::guest::entry!(main);
 
-const TRUNC_PRECISION: i32 = 10;
+const TRUNC_PRECISION: i32 = 3;
 
 pub fn main() {
-    // TODO: Implement your guest code here
+    let input: CircuitInput = env::read();
 
-    // read the input
-    let n: usize = env::read();
-    let ax: Vec<f64> = env::read();
-    let m: usize = env::read();
-    let bx: Vec<f64> = env::read();
+    let output = poly_mul(input.n, &input.ax, input.m, &input.bx);
 
-    // TODO: do something with the input
-    let cx = poly_mul(n, ax, m, bx);
-
-    // write public output to the journal
-    env::commit(&cx);
+    // write to the journal
+    env::commit(&CircuitJournal { input, output });
 }
 
 use std::ops::*;
@@ -65,9 +59,12 @@ fn fft(coeff: &mut [Complex], invert: bool) {
     }
 }
 
-fn poly_mul(n: usize, x: Vec<f64>, m: usize, y: Vec<f64>) -> Vec<f64> {
-    let mut x: Vec<Complex> = x.iter().map(|xi| Complex(*xi as f64, 0.)).collect();
-    let mut y: Vec<Complex> = y.iter().map(|yi| Complex(*yi as f64, 0.)).collect();
+fn poly_mul(n: usize, x: &[f64], m: usize, y: &[f64]) -> Vec<f64> {
+    assert_eq!(n, x.len());
+    assert_eq!(m, y.len());
+
+    let mut x: Vec<Complex> = x.iter().map(|xi| Complex(*xi, 0.)).collect();
+    let mut y: Vec<Complex> = y.iter().map(|yi| Complex(*yi, 0.)).collect();
 
     let len = (n + m).next_power_of_two();
     x.resize(len, Complex(0., 0.));
@@ -79,11 +76,14 @@ fn poly_mul(n: usize, x: Vec<f64>, m: usize, y: Vec<f64>) -> Vec<f64> {
     x.iter_mut().zip(&y).for_each(|(xi, &yi)| *xi = *xi * yi);
     fft(&mut x, true);
 
-    println!("Results of FFT & iFFT:");
-    for xi in &x {
-        println!("{} {}", xi.0, xi.1);
+    if cfg!(debug_assertions) {
+        println!("Results of FFT & iFFT:");
+        for xi in &x {
+            println!("{} {}", xi.0, xi.1);
+        }
     }
-    x.iter().map(|xi| corr(xi.0) as f64).collect()
+
+    x.iter().map(|xi| corr(xi.0)).collect()
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -114,7 +114,7 @@ impl Sub for Complex {
 }
 
 fn corr(val: f64) -> f64 {
-    let mut val2 = (val*10.0f64.powi(TRUNC_PRECISION)).round();
+    let mut val2 = (val * 10.0f64.powi(TRUNC_PRECISION)).round();
     if val2.abs() <= f64::EPSILON {
         val2 = 0.0;
     }
