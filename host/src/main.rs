@@ -9,17 +9,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
 
     // input : [a0, a1, ..., an] for a0 + a1 * x + ... + an * x^n
-    // let input = CircuitInput {
-    //     n: 2,
-    //     ax: vec![-1.0, 1.0], // -1 + x
-    //     m: 5,
-    //     bx: vec![1.0, 1.0, 1.0, 1.0, 1.0], // 1 + x + x^2 + x^3 + x^4
-    // };
     let input = CircuitInput {
-        n: 10,
-        ax: vec![-1.0, 1.0, 0., 0., 0., 0., 0., 0., 0., 0.], // -1 + x
-        m: 10,
-        bx: vec![1.0, 1.0, 1.0, 1.0, 1.0, 0., 0., 0., 0., 0.], // 1 + x + x^2 + x^3 + x^4
+        n: 2,
+        ax: vec![-1.0, 1.0], // -1 + x
+        m: 5,
+        bx: vec![1.0, 1.0, 1.0, 1.0, 1.0], // 1 + x + x^2 + x^3 + x^4
     };
 
     // generate proof
