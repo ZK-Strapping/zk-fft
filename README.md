@@ -1,11 +1,9 @@
 # zk-fft
 
-Welcome to the RISC Zero Rust Starter Template! This template is intended to
-give you a starting point for building a project using the RISC Zero zkVM.
-Throughout the template (including in this README), you'll find comments
-labelled `TODO` in places where you'll need to make changes. To better
-understand the concepts behind this template, check out the [zkVM
-Overview][zkvm-overview].
+This project presents a zero-knowledge (ZK) proof generator for the Fast Fourier Transform (FFT) with the Cooley-Tukey algorithm.
+It serves as a piece of an alternative to bootstrapping for zero-knowledge in the CKKS scheme within Fully Homomorphic Encryption (FHE).
+The aim is to demonstrate the feasibility of such zk proof generation for FFT with real numbers.
+We utilized the RISC0 zkVM for implementation. 
 
 ## Quick Start
 
@@ -20,12 +18,7 @@ command:
 cargo run
 ```
 
-This is an empty template, and so there is no expected output (until you modify
-the code).
-
 ### Executing the project locally in development mode
-
-During development, faster iteration upon code changes can be achieved by leveraging [dev-mode], we strongly suggest activating it during your early development phase. Furthermore, you might want to get insights into the execution statistics of your project, and this can be achieved by specifying the environment variable `RUST_LOG="executor=info"` before running your project.
 
 Put together, the command to run your project in development mode while getting execution statistics is:
 
@@ -35,9 +28,6 @@ RUST_LOG="executor=info" RISC0_DEV_MODE=1 cargo run
 
 ### Running proofs remotely on Bonsai
 
-_Note: The Bonsai proving service is still in early Alpha; an API key is
-required for access. [Click here to request access][bonsai access]._
-
 If you have access to the URL and API key to Bonsai you can run your proofs
 remotely. To prove in Bonsai mode, invoke `cargo run` with two additional
 environment variables:
@@ -46,29 +36,35 @@ environment variables:
 BONSAI_API_KEY="YOUR_API_KEY" BONSAI_API_URL="BONSAI_URL" cargo run
 ```
 
-## How to create a project based on this template
+### Test
+You can test proof generation and verifciation of FFT within zkVM. It tests for various input sizes.
+```bash
+cargo test
+```
 
-Search this template for the string `TODO`, and make the necessary changes to
-implement the required feature described by the `TODO` comment. Some of these
-changes will be complex, and so we have a number of instructional resources to
-assist you in learning how to write your own code for the RISC Zero zkVM:
+## Benchmarks
+Detailed information for performance benchmarks are [here](./host/benches/benchmark.md).
 
-- The [RISC Zero Developer Docs][dev-docs] is a great place to get started.
-- Example projects are available in the [examples folder][examples] of
-  [`risc0`][risc0-repo] repository.
-- Reference documentation is available at [https://docs.rs][docs.rs], including
-  [`risc0-zkvm`][risc0-zkvm], [`cargo-risczero`][cargo-risczero],
-  [`risc0-build`][risc0-build], and [others][crates].
+| n | Proving time | Verifying time |
+| --- | --- | --- |
+| 1 | 60.92s | 538.20ms |
+| 10 | 417.44s | 520.41ms |
+| 50 | 711.53s | 463.19ms |
+| 100 | 3149.14s | 3.34s |
+| 1000 | 31574.50s | 9.37s |
+
+![Benchmark graph](./host/benches/zk_fft_benchmark_graph.png)
+
 
 ## Directory Structure
 
-It is possible to organize the files for these components in various ways.
-However, in this starter template we use a standard directory structure for zkVM
-applications, which we think is a good starting point for your applications.
-
 ```text
-project_name
+zk-fft
 ├── Cargo.toml
+├── core
+│   ├── Cargo.toml
+│   └── src
+│       └── lib.rs                         <-- [Core type goes here]
 ├── host
 │   ├── Cargo.toml
 │   └── src
@@ -85,14 +81,11 @@ project_name
         └── lib.rs
 ```
 
-## Video Tutorial
+## Note
 
-For a walk-through of how to build with this template, check out this [excerpt
-from our workshop at ZK HACK III][zkhack-iii].
-
-## Questions, Feedback, and Collaborations
-
-We'd love to hear from you on [Discord][discord] or [Twitter][twitter].
+- This project is part of the [acceleration program](https://github.com/privacy-scaling-explorations/acceleration-program) with PSE team. The project is currently under a rapid development.
+- There is an issue with the guest's code, specifically with the 'corr' function. This function performs adequately with a relatively small number of inputs (n), but its error becomes larger as the value of n increases significantly.
+- Risc0 supports CUDA operations, but we are encountering bugs enabling it.
 
 [bonsai access]: https://bonsai.xyz/apply
 [cargo-risczero]: https://docs.rs/cargo-risczero
@@ -110,4 +103,3 @@ We'd love to hear from you on [Discord][discord] or [Twitter][twitter].
 [twitter]: https://twitter.com/risczero
 [zkvm-overview]: https://dev.risczero.com/zkvm
 [zkhack-iii]: https://www.youtube.com/watch?v=Yg_BGqj_6lg&list=PLcPzhUaCxlCgig7ofeARMPwQ8vbuD6hC5&index=5
->>>>>>> 3696b58 (Init project)
