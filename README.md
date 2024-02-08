@@ -1,6 +1,9 @@
 # zk-fft
 
-This is an zk proof generator of FFT(Fast Fourier Transform), using Cooley-Tukey algorithm. This is for the replacement of bootstrapping to ZK in CKKS scheme in FHE(Fully Homomorphic Encryption). This project meant to show the proof generator of FFT can be existing, we used Risc0 compiler to implement this. This includes benchmark results ran in specific environment.
+This project presents a zero-knowledge (ZK) proof generator for the Fast Fourier Transform (FFT) with the Cooley-Tukey algorithm.
+It serves as a piece of an alternative to bootstrapping for zero-knowledge in the CKKS scheme within Fully Homomorphic Encryption (FHE).
+The aim is to demonstrate the feasibility of such zk proof generation for FFT with real numbers.
+We utilized the RISC0 zkVM for implementation. 
 
 ## Quick Start
 
@@ -17,8 +20,6 @@ cargo run
 
 ### Executing the project locally in development mode
 
-During development, faster iteration upon code changes can be achieved by leveraging [dev-mode], we strongly suggest activating it during your early development phase. Furthermore, you might want to get insights into the execution statistics of your project, and this can be achieved by specifying the environment variable `RUST_LOG="executor=info"` before running your project.
-
 Put together, the command to run your project in development mode while getting execution statistics is:
 
 ```bash
@@ -26,9 +27,6 @@ RUST_LOG="executor=info" RISC0_DEV_MODE=1 cargo run
 ```
 
 ### Running proofs remotely on Bonsai
-
-_Note: The Bonsai proving service is still in early Alpha; an API key is
-required for access. [Click here to request access][bonsai access]._
 
 If you have access to the URL and API key to Bonsai you can run your proofs
 remotely. To prove in Bonsai mode, invoke `cargo run` with two additional
@@ -38,32 +36,35 @@ environment variables:
 BONSAI_API_KEY="YOUR_API_KEY" BONSAI_API_URL="BONSAI_URL" cargo run
 ```
 
-### Testing guest code
-If you want to have an test of prover(guest)'s program, try the test part of host's program. You can either run a each test or all tests on single run.
+### Test
+You can test proof generation and verifciation of FFT within zkVM. It tests for various input sizes.
+```bash
+cargo test
+```
 
-## How to create a project based on this template
+## Benchmarks
+Detailed information for performance benchmarks are [here](./host/benches/benchmark.md).
 
-Search this template for the string `TODO`, and make the necessary changes to
-implement the required feature described by the `TODO` comment. Some of these
-changes will be complex, and so we have a number of instructional resources to
-assist you in learning how to write your own code for the RISC Zero zkVM:
+| n | Proving time | Verifying time |
+| --- | --- | --- |
+| 1 | 60.92s | 538.20ms |
+| 10 | 417.44s | 520.41ms |
+| 50 | 711.53s | 463.19ms |
+| 100 | 3149.14s | 3.34s |
+| 1000 | 31574.50s | 9.37s |
 
-- The [RISC Zero Developer Docs][dev-docs] is a great place to get started.
-- Example projects are available in the [examples folder][examples] of
-  [`risc0`][risc0-repo] repository.
-- Reference documentation is available at [https://docs.rs][docs.rs], including
-  [`risc0-zkvm`][risc0-zkvm], [`cargo-risczero`][cargo-risczero],
-  [`risc0-build`][risc0-build], and [others][crates].
+![Benchmark graph](./host/benches/zk_fft_benchmark_graph.png)
 
-## Brief Directory Structure
 
-It is possible to organize the files for these components in various ways.
-However, in this starter template we use a standard directory structure for zkVM
-applications, which we think is a good starting point for your applications.
+## Directory Structure
 
 ```text
-project_name
+zk-fft
 ├── Cargo.toml
+├── core
+│   ├── Cargo.toml
+│   └── src
+│       └── lib.rs                         <-- [Core type goes here]
 ├── host
 │   ├── Cargo.toml
 │   └── src
@@ -80,9 +81,11 @@ project_name
         └── lib.rs
 ```
 
-## Bugs ?
-- It has a problem with guest's code, which is function corr. Function corr operates well on sufficiently less n(number of inputs), but it works wrong when n goes sufficiently large.
-- Though Risc0 supports cuda operation, it hasn't been compiled well on our local machine well. We should figure out whether it's a native problem, or fixable problem with editing code or adding compile options.
+## Note
+
+- This project is part of the [acceleration program](https://github.com/privacy-scaling-explorations/acceleration-program) with PSE team. The project is currently under a rapid development.
+- There is an issue with the guest's code, specifically with the 'corr' function. This function performs adequately with a relatively small number of inputs (n), but its error becomes larger as the value of n increases significantly.
+- Risc0 supports CUDA operations, but we are encountering bugs enabling it.
 
 [bonsai access]: https://bonsai.xyz/apply
 [cargo-risczero]: https://docs.rs/cargo-risczero
