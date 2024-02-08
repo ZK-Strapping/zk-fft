@@ -1,11 +1,6 @@
 # zk-fft
 
-Welcome to the RISC Zero Rust Starter Template! This template is intended to
-give you a starting point for building a project using the RISC Zero zkVM.
-Throughout the template (including in this README), you'll find comments
-labelled `TODO` in places where you'll need to make changes. To better
-understand the concepts behind this template, check out the [zkVM
-Overview][zkvm-overview].
+This is an zk proof generator of FFT(Fast Fourier Transform), using Cooley-Tukey algorithm. This is for the replacement of bootstrapping to ZK in CKKS scheme in FHE(Fully Homomorphic Encryption). This project meant to show the proof generator of FFT can be existing, we used Risc0 compiler to implement this. This includes benchmark results ran in specific environment.
 
 ## Quick Start
 
@@ -19,9 +14,6 @@ command:
 ```bash
 cargo run
 ```
-
-This is an empty template, and so there is no expected output (until you modify
-the code).
 
 ### Executing the project locally in development mode
 
@@ -46,6 +38,9 @@ environment variables:
 BONSAI_API_KEY="YOUR_API_KEY" BONSAI_API_URL="BONSAI_URL" cargo run
 ```
 
+### Testing guest code
+If you want to have an test of prover(guest)'s program, try the test part of host's program. You can either run a each test or all tests on single run.
+
 ## How to create a project based on this template
 
 Search this template for the string `TODO`, and make the necessary changes to
@@ -60,7 +55,7 @@ assist you in learning how to write your own code for the RISC Zero zkVM:
   [`risc0-zkvm`][risc0-zkvm], [`cargo-risczero`][cargo-risczero],
   [`risc0-build`][risc0-build], and [others][crates].
 
-## Directory Structure
+## Brief Directory Structure
 
 It is possible to organize the files for these components in various ways.
 However, in this starter template we use a standard directory structure for zkVM
@@ -85,14 +80,9 @@ project_name
         └── lib.rs
 ```
 
-## Video Tutorial
-
-For a walk-through of how to build with this template, check out this [excerpt
-from our workshop at ZK HACK III][zkhack-iii].
-
-## Questions, Feedback, and Collaborations
-
-We'd love to hear from you on [Discord][discord] or [Twitter][twitter].
+## Bugs ?
+- It has a problem with guest's code, which is function corr. Function corr operates well on sufficiently less n(number of inputs), but it works wrong when n goes sufficiently large.
+- Though Risc0 supports cuda operation, it hasn't been compiled well on our local machine well. We should figure out whether it's a native problem, or fixable problem with editing code or adding compile options.
 
 [bonsai access]: https://bonsai.xyz/apply
 [cargo-risczero]: https://docs.rs/cargo-risczero
@@ -110,4 +100,3 @@ We'd love to hear from you on [Discord][discord] or [Twitter][twitter].
 [twitter]: https://twitter.com/risczero
 [zkvm-overview]: https://dev.risczero.com/zkvm
 [zkhack-iii]: https://www.youtube.com/watch?v=Yg_BGqj_6lg&list=PLcPzhUaCxlCgig7ofeARMPwQ8vbuD6hC5&index=5
->>>>>>> 3696b58 (Init project)
