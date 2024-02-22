@@ -117,6 +117,11 @@ mod tests {
     }
 
     #[test]
+    fn test_poly_mul_50() {
+        test_poly_mul_n(50);
+    }
+
+    #[test]
     fn test_poly_mul_100() {
         test_poly_mul_n(100);
     }
@@ -124,6 +129,11 @@ mod tests {
     #[test]
     fn test_poly_mul_1000() {
         test_poly_mul_n(1000);
+    }
+
+    #[test]
+    fn test_poly_mul_4096() {
+        test_poly_mul_n(4096);
     }
 
     fn test_poly_mul_n(n: usize) {

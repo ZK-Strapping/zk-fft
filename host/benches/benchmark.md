@@ -32,3 +32,16 @@ Proving time (Proof generation) and Verifying time are measured.
 | 1000 | 31574.50s | 9.37s |
 
 ![Benchmark graph](zk_fft_benchmark_graph.png)
+
+## Results with Bonsai
+
+| n | Proving time | Verifying time |
+| --- | --- | --- |
+| 1 | 33.04s | 82.44ms |
+| 10 | 44.43s | 83.83ms |
+| 50 | 56.25s | 85.69ms |
+| 100 | 72.76s | 90.62ms |
+| 1000 | 231.89s | 78.89ms |
+| 4096 | 726.64s | 92.49ms |
+
+![Benchmark graph](zk_fft_benchmark_graph_bonsai.png)
