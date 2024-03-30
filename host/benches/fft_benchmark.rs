@@ -12,8 +12,8 @@ fn criterion_benchmark(c: &mut Criterion) {
     let ns = vec![1];
 
     for n in ns {
-        let ax: Vec<f64> = (0..n).map(|_| rng.gen_range(0..10000) as f64).collect();
-        let bx: Vec<f64> = (0..n).map(|_| rng.gen_range(0..10000) as f64).collect();
+        let ax: Vec<f32> = (0..n).map(|_| rng.gen_range(0..10000) as f32).collect();
+        let bx: Vec<f32> = (0..n).map(|_| rng.gen_range(0..10000) as f32).collect();
 
         let input = CircuitInput { n, ax, m: n, bx };
 

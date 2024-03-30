@@ -34,7 +34,7 @@ fn fft(coeff: &mut [Complex], invert: bool) {
     let mut len = 2;
 
     while len <= n {
-        let mut ang = std::f64::consts::TAU / len as f64;
+        let mut ang = std::f32::consts::TAU / len as f32;
         if invert {
             ang = -ang;
         }
@@ -53,13 +53,13 @@ fn fft(coeff: &mut [Complex], invert: bool) {
     }
     if invert {
         for coef in coeff {
-            coef.0 /= n as f64;
-            coef.1 /= n as f64;
+            coef.0 /= n as f32;
+            coef.1 /= n as f32;
         }
     }
 }
 
-fn poly_mul(n: usize, x: &[f64], m: usize, y: &[f64]) -> Vec<f64> {
+fn poly_mul(n: usize, x: &[f32], m: usize, y: &[f32]) -> Vec<f32> {
     assert_eq!(n, x.len());
     assert_eq!(m, y.len());
 
@@ -83,18 +83,27 @@ fn poly_mul(n: usize, x: &[f64], m: usize, y: &[f64]) -> Vec<f64> {
         }
     }
 
-    x.iter().map(|xi| corr(xi.0)).collect()
+    x.iter().map(|xi| xi.0.round()).collect()
 }
 
 #[derive(Clone, Copy, PartialEq)]
-struct Complex(f64, f64);
+struct Complex(f32, f32);
+
+const SCALE: f32 = (1 << 10) as f32;
+fn scale(x: Complex) -> (i64, i64) {
+    ((x.0 * SCALE).round() as i64, (x.1 * SCALE).round() as i64)
+}
 
 impl Mul for Complex {
     type Output = Self;
     fn mul(self, rhs: Self) -> Self {
+        // scale and rescale
+        let lhs = scale(self);
+        let rhs = scale(rhs);
+
         Complex(
-            self.0 * rhs.0 - self.1 * rhs.1,
-            self.0 * rhs.1 + self.1 * rhs.0,
+            (lhs.0 * rhs.0 - lhs.1 * rhs.1) as f32 / (SCALE * SCALE),
+            (lhs.0 * rhs.1 + lhs.1 * rhs.0) as f32 / (SCALE * SCALE),
         )
     }
 }
@@ -102,21 +111,33 @@ impl Mul for Complex {
 impl Add for Complex {
     type Output = Self;
     fn add(self, rhs: Self) -> Self {
-        Complex(self.0 + rhs.0, self.1 + rhs.1)
+        let lhs = scale(self);
+        let rhs = scale(rhs);
+
+        Complex(
+            (lhs.0 + rhs.0) as f32 / SCALE,
+            (lhs.1 + rhs.1) as f32 / SCALE,
+        )
     }
 }
 
 impl Sub for Complex {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self {
-        Complex(self.0 - rhs.0, self.1 - rhs.1)
+        let lhs = scale(self);
+        let rhs = scale(rhs);
+
+        Complex(
+            (lhs.0 - rhs.0) as f32 / SCALE,
+            (lhs.1 - rhs.1) as f32 / SCALE,
+        )
     }
 }
 
-fn corr(val: f64) -> f64 {
-    let mut val2 = (val * 10.0f64.powi(TRUNC_PRECISION)).round();
-    if val2.abs() <= f64::EPSILON {
+fn corr(val: f32) -> f32 {
+    let mut val2 = (val * 10.0f32.powi(TRUNC_PRECISION)).round();
+    if val2.abs() <= f32::EPSILON {
         val2 = 0.0;
     }
-    val2 * 10.0f64.powi(-TRUNC_PRECISION)
+    val2 * 10.0f32.powi(-TRUNC_PRECISION)
 }

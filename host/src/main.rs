@@ -72,22 +72,22 @@ mod tests {
         let n: usize = nm[0];
         let m: usize = nm[1];
 
-        let ax: Vec<f64> = input_lines
+        let ax: Vec<f32> = input_lines
             .next()
             .unwrap()?
             .split_whitespace()
-            .map(|x| x.parse::<f64>().unwrap())
+            .map(|x| x.parse::<f32>().unwrap())
             .collect();
-        let bx: Vec<f64> = input_lines
+        let bx: Vec<f32> = input_lines
             .next()
             .unwrap()?
             .split_whitespace()
-            .map(|x| x.parse::<f64>().unwrap())
+            .map(|x| x.parse::<f32>().unwrap())
             .collect();
 
         let output_file =
             File::open(format!("./src/tests/out/{}.out", test_case)).expect("file not found");
-        let real_output: Vec<f64> = BufReader::new(output_file)
+        let real_output: Vec<f32> = BufReader::new(output_file)
             .lines()
             .next()
             .unwrap()?
@@ -138,14 +138,14 @@ mod tests {
 
     fn test_poly_mul_n(n: usize) {
         let mut rng = rand::thread_rng();
-        let ax: Vec<f64> = (0..n).map(|_| rng.gen_range(-100..=100) as f64).collect();
-        let bx: Vec<f64> = (0..n).map(|_| rng.gen_range(-100..=100) as f64).collect();
+        let ax: Vec<f32> = (0..n).map(|_| rng.gen_range(-100..=100) as f32).collect();
+        let bx: Vec<f32> = (0..n).map(|_| rng.gen_range(-100..=100) as f32).collect();
 
         let input = CircuitInput { n, ax, m: n, bx };
         let timer = Instant::now();
         let receipt = generate_proof(input).unwrap();
         let proving_time = timer.elapsed();
-        // print_journal(&receipt);
+        print_journal(&receipt);
         println!("[n = {n}] Proving time: {:?}", proving_time);
 
         let journal: CircuitJournal = receipt.journal.decode().unwrap();
